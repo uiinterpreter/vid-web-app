@@ -14,19 +14,22 @@ export default {
       runner: "uninitialized"
     },
     actions: {    
-        emitActionRequest ({ commit, rootState, state, dispatch }, action, data=null) {      
+        emitActionRequest ({ commit, rootState, state, dispatch }, action, data=null) {  
+            debugger;    
             let token = $cookies.get("user_jwt"); //rootState.user.jwttoken;      
             let actionRequest = requestBuilder.newActionRequest(action, data);
             let options = {};
             if (token !== null) {
                 options = {
-                headers: {'X-CSRF-TOKEN': token, 'Authorization': 'Bearer ' + token},
-                withCredentials: true
+                // headers: {'X-CSRF-TOKEN': token, 'Authorization': 'Bearer ' + token},
+                headers: {},
+                withCredentials: false
                 };
             }
             return new Promise((resolve, reject) => {
                 axios
-                  .post("/api/v1", actionRequest, options)
+                //   .post("/api/v1", actionRequest, options)
+                  .get("/"+action[0].Port, actionRequest, options)
                   .then(r => r.data)
                   .then(reply => {
                     dispatch('updateApp', reply.head);
@@ -104,28 +107,28 @@ export default {
             runAction({ commit, state, dispatch }, action) {      //console.log(action); this is too gullyble       
                 let setTimeoutObject = setTimeout(() => {        
                     switch (action.action) {          
-                        case 'notify':            
-                            this.dispatch('notifications/pushNotification', [action.message, action.messagetype]); 
-                            break;          
+                //         case 'notify':            
+                //             this.dispatch('notifications/pushNotification', [action.message, action.messagetype]); 
+                //             break;          
                         case 'route':
                             this.$router.push('/' + action.route);
                             break;
-                        case 'updateActionlinkStatus':
-                            console.log("updateActionlinkStatus");
-                            this.dispatch('actionlink/pushStatus', [action.status, action.message]);
-                            break;
-                        case 'updateToken':
-                            this.dispatch("user/setToken", action.token);
-                            this.dispatch("user/setUserInfo", action.userinfo);
-                            this.dispatch('actionlink/pushStatus', [action.status, action.message]);
-                            break;
-                        case 'updateMenu':
-                            if(action.data.length === 0){
-                                this.$router.push('/dashboard');
-                            }else{
-                                this.dispatch('menu/updateMenu', action.data);
-                            }
-                            break;
+                        // case 'updateActionlinkStatus':
+                        //     console.log("updateActionlinkStatus");
+                        //     this.dispatch('actionlink/pushStatus', [action.status, action.message]);
+                        //     break;
+                        // case 'updateToken':
+                        //     this.dispatch("user/setToken", action.token);
+                        //     this.dispatch("user/setUserInfo", action.userinfo);
+                        //     this.dispatch('actionlink/pushStatus', [action.status, action.message]);
+                        //     break;
+                        // case 'updateMenu':
+                        //     if(action.data.length === 0){
+                        //         this.$router.push('/dashboard');
+                        //     }else{
+                        //         this.dispatch('menu/updateMenu', action.data);
+                        //     }
+                        //     break;
                         case 'loadView':
                             this.dispatch('views/loadView', [action.viewname, action.viewdata]);
                             break;

@@ -9,13 +9,16 @@
     "generate": "nuxt generate"
   },
   "dependencies": {
+    "@nuxtjs/axios": "^5.13.6",
+    "@nuxtjs/proxy": "^2.1.0",
     "axios": "^0.21.4",
     "core-js": "^3.15.1",
+    "cross-env": "^7.0.3",
     "nuxt": "^2.15.7",
-    "obs-websocket-js": "^4.0.3",
     "vue-axios": "^3.3.7",
     "vue-cookies": "^1.7.4",
-    "vuetify": "^2.5.5"
+    "vuetify": "^2.5.5",
+    "vuex-map-fields": "^1.4.1"
   },
   "devDependencies": {
     "@nuxtjs/vuetify": "^1.12.1"

@@ -40,8 +40,17 @@
 </template>
 
 <script>
+import * as actionBuilder from '@/api/actionBuilder';
 import Vuetify from "vuetify"
-import OBSWebSocket from "obs-websocket-js"
+import { createHelpers } from "vuex-map-fields";
+import { mapState } from "vuex";
+
+// The getter and mutation types are provided to the vue module
+// they must be the same as the function names used in the store.
+const { mapFields } = createHelpers({
+  getterType: "views/getView",
+  mutationType: "views/updateView"
+});
 
 export default {
   data () {
@@ -58,32 +67,36 @@ export default {
         {text: "Stop Procedure", disabled: true},
         {text: "Take A Bookmark", disabled: true}
       ],
-      wsText: ""
+      wsText: "",
+      dataFetch: "",
+      route: ''
     }
   },
+  // async fetch() {
+  //   this.dataFetch = await fetch(
+  //     `https://localhost:5000/${this.route}`
+  //   ).then(res => res.json())
+  //   console.log(this.dataFetch)
+  // },
   methods:{
+    async fetchSomething() {
+      const dat = await this.$axios.$get(`/api/${this.route}`)
+      console.log(dat);
+    },
     measurementAction (value){
       this.wsText = "";
       switch (value){
         case 0:
-          // console.log("connect to websocket");
-          // this.obs.connect({
-          //   address: 'localhost:4444',
-          //   password: '1234'
-          // })
-          // .then(() => {
-          //   console.log(`Success! We're connected & authenticated.`);
-          //   return obs.send('GetSceneList');
-          // })
-          // .catch(err => { // Promise convention dicates you have a catch on every chain.
-          //     console.log(err);
-          // });
+          this.route = '/start_procedure';
+          this.fetchSomething();
           this.buttons[1].disabled = false;
           this.buttons[5].disabled = false;
           this.buttons[0].disabled = true;
           break;
         case 1: 
           console.log("send recording signal to websocket");
+          this.route = '/start_recording';
+          this.fetchSomething();
           this.buttons[1].disabled = true;
           this.buttons[2].disabled = false;
           this.buttons[4].disabled = false;
@@ -108,6 +121,8 @@ export default {
           break;
         case 5:
           console.log("Disconnect from websocket");
+          this.route = '/stop_procedure';
+          this.fetchSomething();
           this.buttons[2].disabled = true;
           this.buttons[3].disabled = true;
           this.buttons[4].disabled = true;
@@ -122,6 +137,21 @@ export default {
           break;
         default:
           console.log("no default value");
+      }
+    }
+  },
+  computed: {
+    ...mapState("views", ["viewDictionary"]),
+    ...mapState("views", ["viewStates"]),
+    isLoading: function() {
+      // return this.viewStates["account/todoList"] !== "ready";
+      console.log("initial")
+    }
+  },
+  watch:{
+    viewStates(newValue, oldValue) {
+      if(newValue["wsConnect/connectWebSocket"] === "ready" ){
+
       }
     }
   }
